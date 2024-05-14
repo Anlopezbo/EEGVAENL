@@ -16,7 +16,7 @@ def get_accuracy(preds,y_true,decimals=2):
     return np.round(acc*100,decimals=decimals)
 
 
-def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths,autoencoder):
+def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths,autoencoder,n_splits = 4):
             if(validation_mode == 'lawhern2018'):
 
                 if(autoencoder):
@@ -25,7 +25,7 @@ def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths,aut
                     acc = []
                     c = 0
 
-                    skf = StratifiedKFold(n_splits=4)
+                    skf = StratifiedKFold(n_splits= n_splits)
 
                     for train_index, test_index in skf.split(X_train, Y_train[1]):
 
@@ -46,14 +46,14 @@ def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths,aut
                     acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
                     kappa = cohen_kappa_score(y_true,get_pred_labels(preds))
                     F1_score = f1_score(y_true, get_pred_labels(preds))
-                    return acc , kappa ,F1_score
+                    return acc , kappa ,F1_score,preds
                 else:
                     preds = []
                     y_true = []
                     acc = []
                     c = 0
 
-                    skf = StratifiedKFold(n_splits=4)
+                    skf = StratifiedKFold(n_splits=n_splits)
 
                     for train_index, test_index in skf.split(X_train, Y_train):
 
@@ -74,11 +74,11 @@ def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths,aut
                     acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
                     kappa = cohen_kappa_score(y_true,get_pred_labels(preds))
                     F1_score = f1_score(y_true, get_pred_labels(preds))
-                    return acc,kappa ,F1_score
+                    return acc,kappa ,F1_score,preds
             else:
                  return 'otros métodos de validación no han sido implementados'
 
-def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batchSize,epochs,verbose,seed = 20200220,autoencoder=False,indice=0):
+def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batchSize,epochs,verbose,n_splits=4,seed = 20200220,autoencoder=False,indice=0):
         
         """
         Parameters
@@ -128,7 +128,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     acc = get_accuracy(preds[1],y_val[1],decimals=2)
                 else:
                     acc = get_accuracy(preds,y_val,decimals=2)
-                return Model,history,acc
+                return Model,history,acc,preds
             
         else:
 
@@ -176,7 +176,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     else:
                         acc = get_accuracy(preds,y_val,decimals=2)
 
-                    return Model, History , acc
+                    return Model, History , acc,preds
 
 
                 elif validation_mode=='schirrmeister2017_legal':
@@ -211,7 +211,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                         acc = get_accuracy(preds[1],y_val[1],decimals=2)
                     else:
                         acc = get_accuracy(preds,y_val,decimals=2)
-                    return Model, History , acc
+                    return Model, History , acc,preds
 
                 elif validation_mode=='schirrmeister2021':
 
@@ -233,7 +233,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     else:
                         acc = get_accuracy(preds,y_val,decimals=2)
 
-                    return Model, History, acc
+                    return Model, History, acc,preds
 
                     
                 elif validation_mode=='lawhern2018':
@@ -248,7 +248,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     acc = []
                     c = 0
 
-                    skf = StratifiedKFold(n_splits=4)
+                    skf = StratifiedKFold(n_splits=n_splits)
                     print("data genial: ")
 
                     if(autoencoder == True):
@@ -277,7 +277,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                         y_true = np.concatenate(y_true,axis=0)
                         acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
 
-                        return Model,History,acc
+                        return Model,History,acc,preds
                     elif(autoencoder == 'MIN2NET'):
                         for train_index, test_index in skf.split(X_train, Y_train[indice]):
                             print("data: ",train_index, test_index)
@@ -303,7 +303,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                         preds = np.concatenate(preds,axis=0)
                         y_true = np.concatenate(y_true,axis=0)
                         acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
-                        return Model,History,acc
+                        return Model,History,acc,preds
                     else:
                         for train_index, test_index in skf.split(X_train, Y_train):
                             print("data: ",train_index, test_index)
@@ -330,7 +330,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                         y_true = np.concatenate(y_true,axis=0)
                         acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
 
-                        return Model,History,acc
+                        return Model,History,acc,preds
 
 
 

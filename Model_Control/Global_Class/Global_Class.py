@@ -1,5 +1,6 @@
 ## CARGAMOS LOS MODELOS DE EEG
 import tensorflow as tf
+import numpy as np
 from ..Models.DeepConvNet import DeepConvNet
 from ..Models.DMTL_BCI import DMTL_BCI
 from ..Models.EEGNet import EEGNet
@@ -278,7 +279,7 @@ class ModelControl():
                  print("======================================")
         
      
-     def accuracy_model(self,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,validation_mode:str = None,autoencoder = False,list_paths=None):
+     def accuracy_model(self,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,validation_mode:str = None,autoencoder = False,list_paths=None,n_splits:int = 4):
          
                 """
                 Parameters
@@ -320,10 +321,10 @@ class ModelControl():
                 #     print("X_train,Y_train,x_val,y_val,validation_mode,list_paths")
                 #     print("\n")
                 if(Model != None):
-                    acc=calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths,autoencoder)
+                    acc=calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths,autoencoder,n_splits=n_splits)
                     return acc
 
-     def train_model(self,Indice = 0,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,callbacks_names = None,call_args = None,validation_mode:str = None, batch_size:int =30,epochs:int = 100,verbose:int =1,autoencoder = False):
+     def train_model(self,Indice = 0,Model = None,X_train=None,Y_train=None,x_val=None,y_val=None,callbacks_names = None,call_args = None,validation_mode:str = None, batch_size:int =30,epochs:int = 100,verbose:int =1, n_splits:int = 4,autoencoder = False):
          
          """
         Parameters
@@ -371,17 +372,17 @@ class ModelControl():
          if(Model == None):
             ### VERIFICAMOS EL MODELO PROPIO PARA SABER SI SE COMPILO
 
-            self.Model, History , acc=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,autoencoder=autoencoder,indice = Indice)
+            self.Model, History , acc, preds=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,n_splits=n_splits,autoencoder=autoencoder,indice = Indice)
                 
                 ## PARA CALCULAR EL ACCURRACY UNA VEZ LO TENGA CLARO HASTA ESTE PUNTO PROCEDEMOS A GENERAR ESE APARTADO
-            return History,acc
+            return History,acc,preds
 
             
          else:
             
             self.Model = Model ### DEFINIMOS EL MODELO COMO PROPIO DEL OBJETO
-            self.Model, History , acc=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,autoencoder=autoencoder,indice = Indice)
-            return History,acc
+            self.Model, History , acc, preds=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,n_splits=n_splits,autoencoder=autoencoder,indice = Indice, seed=np.random.randint(0,10000))
+            return History,acc,preds
             
             
             
