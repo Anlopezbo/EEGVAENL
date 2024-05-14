@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     name='EEGVAENL',
     version='0.1',
-    packages=['MI_prediction'],
+    packages=['MI_prediction', 'Model_Control'],
 
     author='J.C Caicedo-Acosta',
     author_email='jccaicedoac@unal.edu.co',
