@@ -293,7 +293,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                             
                             Model.load_weights(callbacks['checkpoint_train'+str(c+1)].filepath)
                             pred = Model.predict(X_test_)
-                            preds.append(pred)
+                            preds.append(pred[indice])
                             y_preds = preds[c].argmax(axis = -1)
                             y_true.append(y_test_)
                             acc.append(np.mean(y_preds == y_test_))
