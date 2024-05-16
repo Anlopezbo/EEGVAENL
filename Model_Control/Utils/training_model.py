@@ -243,7 +243,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                     ----------------------------------
                     """
                    
-                    preds = []
+                    preds = {}
                     y_true = []
                     acc = []
                     c = 0
@@ -266,7 +266,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                             
                             Model.load_weights(callbacks['checkpoint_train'+str(c+1)].filepath)
                             pred = Model.predict(X_test_)
-                            preds.append(pred[indice])
+                            preds[c]= pred[indice]
                             y_preds = preds[c].argmax(axis = -1)
                             y_true.append(y_test_)
                             acc.append(np.mean(y_preds == y_test_))
@@ -274,10 +274,11 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                             c += 1
                         
                         preds = np.concatenate(preds,axis=0)
+                        all_preds = np.concatenate([preds[i] for i in range(n_splits)], axis=0)
                         y_true = np.concatenate(y_true,axis=0)
                         acc = get_accuracy(preds,tf.keras.utils.to_categorical(y_true,num_classes=2),decimals=2)
 
-                        return Model,History,acc,preds
+                        return Model,History,acc,all_preds
                     elif(autoencoder == 'MIN2NET'):
                         for train_index, test_index in skf.split(X_train, Y_train[indice]):
                             print("data: ",train_index, test_index)
