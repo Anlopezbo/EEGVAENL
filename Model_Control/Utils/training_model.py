@@ -258,7 +258,7 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                             X_train_, X_test_ = X_train[train_index], X_train[test_index]
                             y_train_, y_test_ = Y_train[indice][train_index], Y_train[indice][test_index]
 
-                            x_tr, x_v, y_tr, y_v = train_test_split(X_train_, y_train_, test_size=0.0,random_state=seed)
+                            x_tr, x_v, y_tr, y_v = train_test_split(X_train_, y_train_, test_size=0.3,random_state=seed)
 
                             callbacks_names = [callbacks['checkpoint_train'+str(c+1)],callbacks['early_stopping_train'+str(c+1)]]
 
