@@ -1,5 +1,9 @@
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 from sklearn.model_selection import train_test_split,StratifiedKFold
 from sklearn.metrics import cohen_kappa_score
 from sklearn.metrics import f1_score
@@ -77,6 +81,32 @@ def calAccuracy(Model,X_train,Y_train,x_val,y_val,validation_mode,list_paths,aut
                     return acc,kappa ,F1_score,preds
             else:
                  return 'otros métodos de validación no han sido implementados'
+            
+def plot_pca_tsne(data, labels, title):
+    pca = PCA(n_components=2)
+    pca_result = pca.fit_transform(data)
+    
+    tsne = TSNE(n_components=2, random_state=42)
+    tsne_result = tsne.fit_transform(data)
+    
+    fig, ax = plt.subplots(1, 2, figsize=(16, 6))
+    sns.scatterplot(x=pca_result[:, 0], y=pca_result[:, 1], hue=labels, ax=ax[0], palette='viridis')
+    ax[0].set_title(f'PCA - {title}')
+    
+    sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, ax=ax[1], palette='viridis')
+    ax[1].set_title(f't-SNE - {title}')
+    
+    plt.show()
+
+def plot_loss(history, fold):
+    plt.figure(figsize=(12, 6))
+    plt.plot(history.history['loss'], label='Training Loss')
+    plt.plot(history.history['val_loss'], label='Validation Loss')
+    plt.title(f'Training and Validation Loss - Fold {fold}')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
 
 def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode, batchSize,epochs,verbose,n_splits=4,seed = 20200220,autoencoder=False,indice=0):
         
@@ -274,6 +304,10 @@ def redirectToTrain(Model,callbacks,X_train,Y_train,x_val,y_val,validation_mode,
                             y_true.append(y_test_)
                             acc.append(np.mean(y_preds == y_test_))
                             print("Fold %d Classification accuracy: %f " % (c+1,acc[c]))
+
+                            # Plot PCA, TSNE, and loss
+                            plot_pca_tsne(X_test_, y_test_, f'Fold {c + 1} Test Set')
+                            plot_loss(history, c + 1)
                             c += 1
                         
                         all_preds = np.concatenate([preds[i] for i in range(n_splits)], axis=0)
