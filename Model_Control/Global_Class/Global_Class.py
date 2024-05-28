@@ -372,7 +372,7 @@ class ModelControl():
          if(Model == None):
             ### VERIFICAMOS EL MODELO PROPIO PARA SABER SI SE COMPILO
 
-            self.Model, History , acc, preds, preds_t =redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,n_splits=n_splits,autoencoder=autoencoder,indice = Indice, seed=np.random.randint(0,10000))
+            self.Model, History , acc, preds, preds_t =redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,n_splits=n_splits,autoencoder=autoencoder,indice = Indice)
                 
                 ## PARA CALCULAR EL ACCURRACY UNA VEZ LO TENGA CLARO HASTA ESTE PUNTO PROCEDEMOS A GENERAR ESE APARTADO
             return History,acc,preds,preds_t
@@ -381,7 +381,7 @@ class ModelControl():
          else:
             
             self.Model = Model ### DEFINIMOS EL MODELO COMO PROPIO DEL OBJETO
-            self.Model, History , acc, preds, preds_t=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,n_splits=n_splits,autoencoder=autoencoder,indice = Indice, seed=np.random.randint(0,10000))
+            self.Model, History , acc, preds, preds_t=redirectToTrain(self.Model,self.callbacks,X_train,Y_train,x_val,y_val,validation_mode, batch_size,epochs,verbose,n_splits=n_splits,autoencoder=autoencoder,indice = Indice)
             return History,acc,preds, preds_t
             
             
